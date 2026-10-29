@@ -72,8 +72,8 @@
       margin-top: 2px;
     }
 
-    /* ミニゲームモーダル */
-    #minigame-overlay {
+    /* ミニゲームモーダル・サイコロ演出オーバーレイ */
+    .overlay {
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -84,6 +84,22 @@
       flex-direction: column;
       z-index: 100;
     }
+
+    /* 大判サイコロ表示 */
+    #dice-number {
+      font-size: 120px;
+      font-weight: bold;
+      color: #ffeb3b;
+      text-shadow: 0 0 20px #ff9800, 0 0 40px #e65100;
+      margin: 20px 0;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
     #eat-btn {
       font-size: 24px;
       padding: 20px 40px;
@@ -144,8 +160,15 @@
     </div>
   </div>
 
+  <!-- サイコロの目でかい表示用オーバーレイ -->
+  <div id="dice-overlay" class="overlay">
+    <h2 id="dice-player-name">〇〇のターン！</h2>
+    <div id="dice-number">🎲</div>
+    <p id="dice-tile-info" style="font-size: 20px; font-weight: bold;"></p>
+  </div>
+
   <!-- ミニゲーム用ポップアップ -->
-  <div id="minigame-overlay">
+  <div id="minigame-overlay" class="overlay">
     <h2>🍖 大食い連打バトル！ 🍖</h2>
     <p>ボタンを連打して料理を食いまくれ！一番連打できた人が+3kg！</p>
     <button id="eat-btn" onclick="clickEat()">食う！！！ (クリック連打)</button>
@@ -177,6 +200,7 @@
     }
 
     function rollDice() {
+      document.getElementById('roll-btn').disabled = true;
       socket.emit('rollDice');
     }
 
@@ -228,6 +252,36 @@
       });
     });
 
+    // サイコロの出目演出を表示するイベントの受信
+    socket.on('diceRolled', (data) => {
+      const diceOverlay = document.getElementById('dice-overlay');
+      const diceNum = document.getElementById('dice-number');
+      const playerName = document.getElementById('dice-player-name');
+      const tileInfo = document.getElementById('dice-tile-info');
+
+      playerName.innerText = `${data.playerName} がサイコロを振った！`;
+      tileInfo.innerText = '';
+      diceOverlay.style.display = 'flex';
+
+      // シャッフル演出（数字がパラパラ変わる）
+      let count = 0;
+      const interval = setInterval(() => {
+        diceNum.innerText = Math.floor(Math.random() * 6) + 1;
+        count++;
+        if (count > 10) {
+          clearInterval(interval);
+          // 確定の数字を表示
+          diceNum.innerText = data.dice;
+          tileInfo.innerText = `「${data.tileName}」に到着！`;
+
+          // 2秒後にポップアップを消す
+          setTimeout(() => {
+            diceOverlay.style.display = 'none';
+          }, 2000);
+        }
+      }, 50);
+    });
+
     // ミニゲーム開始
     socket.on('startMinigame', (data) => {
       localClickCount = 0;
@@ -248,7 +302,6 @@
 
     // ゲームオーバー
     socket.on('gameOver', (players) => {
-      // 体重が一番重い順にソート
       const ranking = [...players].sort((a, b) => b.weight - a.weight);
       let resultText = '🎉 ゲーム終了！最終結果 🎉\n\n';
       ranking.forEach((p, idx) => {
