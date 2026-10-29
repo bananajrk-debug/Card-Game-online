@@ -1,16 +1,13 @@
 {
-  "name": "poly-pirates",
-  "version": "5.0.0",
-  "description": "海賊テーマの3D海戦マルチプレイヤーFPS：広大マップ・クラーケン・宝のエリア制圧・ガチャ・ショップ・フレンド・CPU対応 (Node.js + Three.js + Socket.io)",
+  "name": "fat-sugoroku-game",
+  "version": "1.0.0",
+  "description": "Online sugoroku game to compete for the heaviest weight",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "engines": {
-    "node": ">=18"
-  },
   "dependencies": {
-    "express": "^4.19.2",
-    "socket.io": "^4.7.5"
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
   }
 }
