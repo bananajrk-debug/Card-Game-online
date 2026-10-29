@@ -72,7 +72,7 @@
       margin-top: 2px;
     }
 
-    /* ミニゲームモーダル・サイコロ演出オーバーレイ */
+    /* オーバーレイ共通 */
     .overlay {
       display: none;
       position: fixed;
@@ -85,13 +85,13 @@
       z-index: 100;
     }
 
-    /* 大判サイコロ表示 */
+    /* サイコロの巨大表示 */
     #dice-number {
-      font-size: 120px;
+      font-size: 130px;
       font-weight: bold;
       color: #ffeb3b;
       text-shadow: 0 0 20px #ff9800, 0 0 40px #e65100;
-      margin: 20px 0;
+      margin: 10px 0;
       animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
@@ -160,11 +160,11 @@
     </div>
   </div>
 
-  <!-- サイコロの目でかい表示用オーバーレイ -->
+  <!-- サイコロの巨大表示用オーバーレイ -->
   <div id="dice-overlay" class="overlay">
     <h2 id="dice-player-name">〇〇のターン！</h2>
     <div id="dice-number">🎲</div>
-    <p id="dice-tile-info" style="font-size: 20px; font-weight: bold;"></p>
+    <p id="dice-tile-info" style="font-size: 22px; font-weight: bold;"></p>
   </div>
 
   <!-- ミニゲーム用ポップアップ -->
@@ -252,7 +252,7 @@
       });
     });
 
-    // サイコロの出目演出を表示するイベントの受信
+    // サイコロ演出の受信
     socket.on('diceRolled', (data) => {
       const diceOverlay = document.getElementById('dice-overlay');
       const diceNum = document.getElementById('dice-number');
